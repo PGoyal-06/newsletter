@@ -10,7 +10,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",
     "build": "node scripts/build.mjs",
-    "deploy": "pnpm typecheck && pnpm test && pnpm build && node scripts/deploy.mjs"
+    "release": "pnpm typecheck && pnpm test && pnpm build && node scripts/deploy.mjs"
   },
   "devDependencies": {
     "@google/clasp": "3.4.1",

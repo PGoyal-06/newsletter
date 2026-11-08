@@ -1,5 +1,5 @@
 // Pushes dist/ to Apps Script, then updates the existing web app deployment in place
-// so its /exec URL never changes. Run via `pnpm --filter script deploy`, which
+// so its /exec URL never changes. Run via `pnpm --filter script release`, which
 // typechecks, tests, and builds first.
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
