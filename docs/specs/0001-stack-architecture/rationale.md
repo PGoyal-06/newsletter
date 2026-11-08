@@ -110,3 +110,10 @@ The remaining layers follow from the same forces. TypeScript plus a shared contr
 - DOMPurify 3.4.17 is current. The browser Sanitizer API is not supported in Safari or iOS.
 - Tailwind CSS 4.3.5 is current.
 - Apps Script `/exec` redirects to `script.googleusercontent.com`; community reports of missing CORS headers on the redirect target are mixed and unofficial.
+
+## Revisions
+
+**2026-11-08**: two corrections found while scaffolding and verifying, no change to the decision itself.
+- The worker deploy command is now `pnpm --filter script release`. `deploy` is a pnpm built in command (it copies a package into a folder), and pnpm resolves built ins before package scripts, so `pnpm --filter script deploy` never reached the project script (`ERR_PNPM_INVALID_DEPLOY_TARGET`, seen in `/check verify`). clasp 3 also renamed `deploy -i <id>` to `update-deployment <id>`.
+- The manifest adds the `script.scriptapp` scope. With `oauthScopes` pinned, Apps Script refuses `ScriptApp.newTrigger` and `deleteTrigger` unless this scope is listed, so `installTriggers()` would fail at setup. It only covers this script's own triggers, so least privilege still holds (basis: least privilege for credentials).
+- From the cross check: the manifest timezone is recorded as `America/New_York` (spec 0002 confirms it), the snapshot file lookup by stored ID is handed to spec 0002, and the `gmail.modify` note now says the scope allows trash; "never delete" is the app's rule, not the scope's.

@@ -11,7 +11,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 
 | # | Feature | Phase | Status |
 |---|---------|-------|--------|
-| 1 | Stack & architecture | Foundation | in-progress |
+| 1 | Stack & architecture | Foundation | done |
 | 2 | Coding standards & tooling | Foundation | planned |
 | 3 | Data contract | Foundation | planned |
 | 4 | Design system & UI foundation | Foundation | planned |
@@ -26,13 +26,13 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 
 ## Foundations
 
-### 1. Stack & architecture · in-progress
+### 1. Stack & architecture · done
 Record the stack the design doc chose (a Gmail script backend plus a home screen web app) and the tools inside it, then scaffold both halves so they run.
 **Done when:** the stack is recorded in a spec, the script project and the web app both deploy, and the empty web app installs to the iPhone home screen.
 - [x] Decide the stack (spec): `/architect stack & architecture`
-- [ ] Scaffold from the decision: `/develop stack & architecture`
-- [ ] Verify it: `/check verify stack & architecture`
-- [ ] Test it: `/test stack & architecture`
+- [x] Scaffold from the decision: `/develop stack & architecture`
+- [x] Verify it: `/check verify stack & architecture`
+- [x] Test it: `/test stack & architecture`
 Spec [0001](../specs/0001-stack-architecture/index.md) · code in `apps/script`, `apps/web`, `packages/contract`
 
 ### 2. Coding standards & tooling

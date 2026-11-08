@@ -1,7 +1,7 @@
 # 0001. Two part stack: Apps Script mail worker plus a Next.js PWA with a server proxy
 
 **Date**: 2026-11-07
-**Status**: In Progress
+**Status**: Accepted
 
 ## Summary
 
@@ -32,7 +32,7 @@ Reasoning and options: see [rationale.md](rationale.md).
 | Runtime | Node 24 LTS locally and on Vercel; Apps Script V8 runtime for the worker | Current active LTS; clasp 3 needs Node 22 or newer |
 | Mail worker | Google Apps Script, installable time driven trigger every 15 minutes, `doGet` web app (Execute as: me, Who has access: Anyone). "Anyone" is deliberate: `doGet` cannot read request headers, so the `key` query param is its only credential (at least 32 random bytes); a missing or wrong key gets the same generic error | Runs as the account owner with Google managed OAuth, so no OAuth client, no stored refresh tokens, no 7 day Testing expiry |
 | Worker build | esbuild bundles `apps/script/src` into one `dist/Code.js`: `format: 'iife'`, `target: 'es2019'`, no minify (readable stack traces); a small entry file assigns every entry point to `globalThis` (`globalThis.doGet = …`, the trigger handler, `installTriggers`); a post build check fails the build if any expected global is missing; the build copies `appsscript.json` into `dist/`; `@types/google-apps-script` for types | clasp 3 no longer compiles TypeScript; Apps Script has no modules, and tree shaking would otherwise drop unreferenced entry points silently |
-| Worker deploy | clasp 3.x with `rootDir: dist`; one manual command `pnpm --filter script deploy` that runs typecheck and tests first, then build, push, and `clasp deploy -i <deploymentId>` to update the existing deployment so the URL never changes; the deployment ID is committed in `apps/script/deploy.json` (not a secret) | Code lives in git; the Gmail scoped credential stays on your laptop only; the script half cannot ship untyped |
+| Worker deploy | clasp 3.x with `rootDir: dist`; one manual command `pnpm --filter script release` that runs typecheck and tests first, then build, push, and `clasp update-deployment <deploymentId>` to update the existing deployment so the URL never changes (the script is named `release`, not `deploy`, because `deploy` is a pnpm built in command and would shadow it); the deployment ID is committed in `apps/script/deploy.json` (not a secret) | Code lives in git; the Gmail scoped credential stays on your laptop only; the script half cannot ship untyped |
 | Snapshot storage | One Drive file written by the worker (shape decided in spec 0002) | CacheService caps values at 100KB and Script Properties at 9KB, neither fits 1 to 2MB of HTML |
 | Web framework | Next.js 16, App Router, standard output (not static export) | Needed for the server proxy route; static export forbids request reading route handlers |
 | Proxy route | `app/api/today/route.ts`, Node runtime, dynamic, `Cache-Control: no-store`, `maxDuration = 30`; checks the app token, then calls Apps Script server side (`redirect: 'follow'`, aborted at 25 seconds) with the script key as a query param; forwards only a response whose content type is JSON and which parses, otherwise returns the typed error envelope (spec 0002) with a 502; never forwards Google's HTML pages; never logs the upstream URL (it contains the key) | Removes the Apps Script redirect CORS risk entirely, keeps the Google facing key off the phone, and turns Google's quota or login pages into an error the app understands |
@@ -67,18 +67,18 @@ iPhone PWA ──GET /api/today──▶ Next.js route on Vercel
 `apps/script/appsscript.json` (committed, copied into `dist/` by the build):
 - `runtimeVersion: "V8"`
 - `webapp`: `access: "ANYONE_ANONYMOUS"`, `executeAs: "USER_DEPLOYING"`
-- `oauthScopes` pinned explicitly to the minimum: `https://www.googleapis.com/auth/gmail.modify` (read, label, archive; never delete) and `https://www.googleapis.com/auth/drive.file` (only the files the script itself creates)
-- `timeZone`: your timezone, value fixed in spec 0002
+- `oauthScopes` pinned explicitly to the minimum: `https://www.googleapis.com/auth/gmail.modify` (read, label, archive; the scope allows trash but not permanent delete, and the worker never trashes or deletes), `https://www.googleapis.com/auth/drive.file` (only the files the script itself creates), and `https://www.googleapis.com/auth/script.scriptapp` (lets `installTriggers()` create and delete this script's own triggers; no mail or file access)
+- `timeZone`: `America/New_York` (your timezone, so daylight saving is handled; spec 0002 confirms it alongside the date key)
 
 One time setup, in order (the scaffold writes this as a checklist in `apps/script/README.md`):
 1. `clasp login` on your laptop, then `clasp create` (standalone script) and commit `.clasp.json`.
-2. First `pnpm --filter script deploy` pushes the code; create the web app deployment once in the editor, then commit its ID to `apps/script/deploy.json`.
-3. Run `installTriggers()` once from the editor. This also triggers Google's consent screen for the two scopes. `installTriggers()` is idempotent: it deletes any trigger pointing at the handler before creating the 15 minute one.
+2. First `pnpm --filter script release` pushes the code; create the web app deployment once in the editor, then commit its ID to `apps/script/deploy.json`.
+3. Run `installTriggers()` once from the editor. This also triggers Google's consent screen for the three scopes. `installTriggers()` is idempotent: it deletes any trigger pointing at the handler before creating the 15 minute one.
 4. Set `SCRIPT_KEY` in Script Properties, and `APP_TOKEN`, `SCRIPT_URL`, `SCRIPT_KEY` in Vercel.
 
 ### Boundaries other specs own
 
-- `packages/contract`: the exact `today.json` shape, the error envelope, the category map, and the stored script settings, plus whether to add a runtime validation library at the proxy boundary: **spec 0002, data contract** (scope feature 3). Also owned there: atomic snapshot writes (the trigger must never leave a half written file that `doGet` reads; `doGet` returns the last good snapshot if the current one fails to parse), the timezone value and the date key the worker emits, and whether image or style stripping happens in the worker or on the phone.
+- `packages/contract`: the exact `today.json` shape, the error envelope, the category map, and the stored script settings, plus whether to add a runtime validation library at the proxy boundary: **spec 0002, data contract** (scope feature 3). Also owned there: atomic snapshot writes (the trigger must never leave a half written file that `doGet` reads; `doGet` returns the last good snapshot if the current one fails to parse), the timezone value and the date key the worker emits, and whether image or style stripping happens in the worker or on the phone. Also there: how the worker finds its snapshot file. Under `drive.file` it sees only files it created, so it stores the file ID in Script Properties and opens it with `getFileById`, never a name or folder search; if that proves insufficient, widening the Drive scope is a new decision, never a silent change.
 - Worker run safety: a `LockService` script lock around each trigger run (skip if a run is still going), staying inside the 6 minute run limit and the daily trigger and Gmail quotas, and turning on Apps Script trigger failure emails: **core loop spec** (scope feature 5).
 - How a 401 or an error envelope behaves in the query layer (no retry on 401, keep showing the cache, open setup to re-enter the token): **offline & freshness spec** (scope feature 7).
 - Component primitives, tokens, and accessibility rules: **design system spec** (scope feature 4).
