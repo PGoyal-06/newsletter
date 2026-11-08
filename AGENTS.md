@@ -16,6 +16,8 @@
 ```bash
 pnpm install --frozen-lockfile     # install (root)
 pnpm --filter web dev              # dev server (service worker off in dev)
+pnpm lint                          # ESLint, whole workspace
+pnpm format                        # Prettier write (format:check in CI)
 pnpm typecheck                     # all packages
 pnpm test                          # unit tests, all packages (Vitest)
 pnpm --filter web test:e2e         # Playwright, WebKit iPhone profile, production build
@@ -40,7 +42,7 @@ pnpm --filter script release       # ship the worker: typecheck, test, build, pu
 
 ## Tooling
 
-To be installed by `/develop coding standards & tooling`:
+Installed (scope feature 2); config in `eslint.config.mjs`, `.prettierrc.json`, `.husky/`, `.lintstagedrc.json`, `.github/workflows/ci.yml`:
 - ESLint (flat config) with typescript-eslint, plus `eslint-config-next` and React hooks rules in `apps/web`; Prettier for formatting.
 - Pre-commit (husky + lint-staged): lint and format staged files, typecheck all packages.
 - GitHub Actions on push: lint, typecheck, unit tests (Playwright optional).
