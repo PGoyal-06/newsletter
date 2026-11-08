@@ -6,7 +6,9 @@ test.describe("offline app shell", () => {
     await page.goto("/");
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     // The service worker takes control on first visit (clientsClaim).
-    await page.waitForFunction(() => navigator.serviceWorker.controller !== null, null, { timeout: 30_000 });
+    await page.waitForFunction(() => navigator.serviceWorker.controller !== null, null, {
+      timeout: 30_000,
+    });
   });
 
   test("opens from the precache with the network off", async ({ page, context }) => {
@@ -36,7 +38,10 @@ test.describe("offline app shell", () => {
 test("links the manifest and the apple touch icon for Add to Home Screen", async ({ page }) => {
   await page.goto("/");
 
-  await expect(page.locator('link[rel="manifest"]')).toHaveAttribute("href", "/manifest.webmanifest");
+  await expect(page.locator('link[rel="manifest"]')).toHaveAttribute(
+    "href",
+    "/manifest.webmanifest",
+  );
   const icon = page.locator('link[rel="apple-touch-icon"]');
   await expect(icon).toHaveAttribute("sizes", "180x180");
   const res = await page.request.get((await icon.getAttribute("href"))!);

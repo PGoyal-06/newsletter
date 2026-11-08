@@ -3,7 +3,9 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
-const manifest = JSON.parse(readFileSync(resolve(import.meta.dirname, "../appsscript.json"), "utf8"));
+const manifest = JSON.parse(
+  readFileSync(resolve(import.meta.dirname, "../appsscript.json"), "utf8"),
+);
 
 describe("appsscript.json", () => {
   it("pins exactly the three minimum scopes, with no full Gmail or full Drive access", () => {

@@ -42,7 +42,9 @@ const broken = ENTRY_POINTS.filter((name) => {
   return typeof fn !== "function" || fn.toString().includes(STUB_MARKER);
 });
 if (broken.length > 0) {
-  console.error(`Build check failed: entry points not assigned to globalThis: ${broken.join(", ")}`);
+  console.error(
+    `Build check failed: entry points not assigned to globalThis: ${broken.join(", ")}`,
+  );
   process.exit(1);
 }
 console.log(`Built dist/Code.js, entry points OK: ${ENTRY_POINTS.join(", ")}`);

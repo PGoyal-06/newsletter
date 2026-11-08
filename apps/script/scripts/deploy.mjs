@@ -7,7 +7,9 @@ import { existsSync, readFileSync } from "node:fs";
 const clasp = (...args) => execFileSync("clasp", args, { stdio: "inherit" });
 
 if (!existsSync(".clasp.json")) {
-  console.error("No .clasp.json. Do step 1 of apps/script/README.md (clasp login, clasp create) first.");
+  console.error(
+    "No .clasp.json. Do step 1 of apps/script/README.md (clasp login, clasp create) first.",
+  );
   process.exit(1);
 }
 

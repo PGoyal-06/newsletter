@@ -13,7 +13,11 @@ let originalMain: string;
 // src/main.ts without touching the repo.
 function build(): { code: number; out: string } {
   try {
-    const out = execFileSync("node", ["scripts/build.mjs"], { cwd: work, encoding: "utf8", stdio: "pipe" });
+    const out = execFileSync("node", ["scripts/build.mjs"], {
+      cwd: work,
+      encoding: "utf8",
+      stdio: "pipe",
+    });
     return { code: 0, out };
   } catch (e) {
     const err = e as { status: number; stdout: string; stderr: string };

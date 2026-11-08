@@ -9,16 +9,97 @@ const ROOT = resolve(import.meta.dirname, "../../..");
 // pnpm 12 built in commands (`pnpm help --all`), minus the ones pnpm forwards to the
 // matching package script (test, start, stop, restart) and `run` itself.
 const SHADOWING_BUILTINS = new Set([
-  "access", "add", "approve", "approve-builds", "audit", "bin", "bugs", "cache", "cat-file",
-  "cat-index", "change", "ci", "clean", "completion", "config", "create", "dedupe", "deploy",
-  "deprecate", "dist-tag", "dlx", "docs", "doctor", "edit", "env", "exec", "fetch", "find-hash",
-  "get", "help", "ignored-builds", "import", "init", "install", "install-test", "lane", "licenses",
-  "link", "list", "ll", "login", "logout", "outdated", "owner", "pack", "pack-app", "patch",
-  "patch-commit", "patch-remove", "peers", "permissions", "ping", "pipeline", "pkg", "prefix",
-  "profile", "prune", "publish", "purge", "rb", "rebuild", "recursive", "remove", "repo", "root",
-  "runtime", "sbom", "search", "self-update", "set", "set-script", "setup", "shim", "stage", "star",
-  "stars", "store", "tasks", "team", "token", "undeprecate", "unlink", "unpublish", "unstar",
-  "update", "version", "view", "whoami", "why", "with", "xmas",
+  "access",
+  "add",
+  "approve",
+  "approve-builds",
+  "audit",
+  "bin",
+  "bugs",
+  "cache",
+  "cat-file",
+  "cat-index",
+  "change",
+  "ci",
+  "clean",
+  "completion",
+  "config",
+  "create",
+  "dedupe",
+  "deploy",
+  "deprecate",
+  "dist-tag",
+  "dlx",
+  "docs",
+  "doctor",
+  "edit",
+  "env",
+  "exec",
+  "fetch",
+  "find-hash",
+  "get",
+  "help",
+  "ignored-builds",
+  "import",
+  "init",
+  "install",
+  "install-test",
+  "lane",
+  "licenses",
+  "link",
+  "list",
+  "ll",
+  "login",
+  "logout",
+  "outdated",
+  "owner",
+  "pack",
+  "pack-app",
+  "patch",
+  "patch-commit",
+  "patch-remove",
+  "peers",
+  "permissions",
+  "ping",
+  "pipeline",
+  "pkg",
+  "prefix",
+  "profile",
+  "prune",
+  "publish",
+  "purge",
+  "rb",
+  "rebuild",
+  "recursive",
+  "remove",
+  "repo",
+  "root",
+  "runtime",
+  "sbom",
+  "search",
+  "self-update",
+  "set",
+  "set-script",
+  "setup",
+  "shim",
+  "stage",
+  "star",
+  "stars",
+  "store",
+  "tasks",
+  "team",
+  "token",
+  "undeprecate",
+  "unlink",
+  "unpublish",
+  "unstar",
+  "update",
+  "version",
+  "view",
+  "whoami",
+  "why",
+  "with",
+  "xmas",
 ]);
 
 function workspaceManifests(): string[] {
@@ -32,7 +113,8 @@ function workspaceManifests(): string[] {
   return found;
 }
 
-const scriptsOf = (p: string): Record<string, string> => JSON.parse(readFileSync(p, "utf8")).scripts ?? {};
+const scriptsOf = (p: string): Record<string, string> =>
+  JSON.parse(readFileSync(p, "utf8")).scripts ?? {};
 
 describe("workspace package scripts", () => {
   it("finds the root and every workspace package", () => {
@@ -49,7 +131,9 @@ describe("workspace package scripts", () => {
 
   it("ships the worker through `release`, which typechecks, tests and builds before deploying", () => {
     const release = scriptsOf(join(ROOT, "apps/script/package.json")).release ?? "";
-    const order = ["pnpm typecheck", "pnpm test", "pnpm build", "node scripts/deploy.mjs"].map((s) => release.indexOf(s));
+    const order = ["pnpm typecheck", "pnpm test", "pnpm build", "node scripts/deploy.mjs"].map(
+      (s) => release.indexOf(s),
+    );
 
     expect(order.every((i) => i >= 0)).toBe(true);
     expect(order).toEqual([...order].sort((a, b) => a - b));

@@ -12,7 +12,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | # | Feature | Phase | Status |
 |---|---------|-------|--------|
 | 1 | Stack & architecture | Foundation | done |
-| 2 | Coding standards & tooling | Foundation | planned |
+| 2 | Coding standards & tooling | Foundation | done |
 | 3 | Data contract | Foundation | planned |
 | 4 | Design system & UI foundation | Foundation | planned |
 | 5 | Core loop: today's feed | Slice 1 | planned |
@@ -35,10 +35,11 @@ Record the stack the design doc chose (a Gmail script backend plus a home screen
 - [x] Test it: `/test stack & architecture`
 Spec [0001](../specs/0001-stack-architecture/index.md) · code in `apps/script`, `apps/web`, `packages/contract`
 
-### 2. Coding standards & tooling
+### 2. Coding standards & tooling · done
 Capture conventions from the real scaffold, then install lint, format, and pre commit checks for both the script and the web app.
 **Done when:** root `AGENTS.md` reflects the real stack, and lint and format run clean on both halves.
-- [ ] Capture conventions + tooling choices: `/audit`
+- [x] Capture conventions + tooling choices: `/audit`
+Code in `eslint.config.mjs`, `.prettierrc.json`, `.husky/`, `.lintstagedrc.json`, `.github/workflows/ci.yml`
 
 ### 3. Data contract · needs a decision
 The shape everything shares: the `today.json` snapshot and its error envelope, the category map (keyed by List-Id, then sender), and the stored script settings (last processed time, secret key, archiving switch).

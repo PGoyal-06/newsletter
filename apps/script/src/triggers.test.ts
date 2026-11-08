@@ -93,6 +93,8 @@ describe("installTriggers", () => {
 
     installTriggers();
 
-    expect(app.installed.map((t) => t.handler).sort()).toEqual([TIMER_HANDLER, "somethingElse"].sort());
+    expect(app.installed.map((t) => t.handler).sort()).toEqual(
+      [TIMER_HANDLER, "somethingElse"].sort(),
+    );
   });
 });
