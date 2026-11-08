@@ -1,0 +1,23 @@
+{
+  "name": "script",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "24.x"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "build": "node scripts/build.mjs",
+    "deploy": "pnpm typecheck && pnpm test && pnpm build && node scripts/deploy.mjs"
+  },
+  "devDependencies": {
+    "@google/clasp": "3.4.1",
+    "@newsletter/contract": "workspace:*",
+    "@types/google-apps-script": "2.0.15",
+    "esbuild": "0.28.2",
+    "typescript": "6.0.3",
+    "vitest": "5.1.0"
+  }
+}
