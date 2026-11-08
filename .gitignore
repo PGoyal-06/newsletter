@@ -28,3 +28,7 @@ npm-debug.log*
 
 # personal notes
 idea.md
+
+# Playwright output
+apps/web/test-results/
+apps/web/playwright-report/

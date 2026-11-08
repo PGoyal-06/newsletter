@@ -9,7 +9,9 @@
     "dev": "next dev --webpack",
     "build": "next build --webpack",
     "start": "next start",
-    "typecheck": "SERWIST_SUPPRESS_TURBOPACK_WARNING=1 next typegen && tsc --noEmit"
+    "typecheck": "SERWIST_SUPPRESS_TURBOPACK_WARNING=1 next typegen && tsc --noEmit",
+    "test": "vitest run",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@newsletter/contract": "workspace:*",
@@ -20,11 +22,13 @@
     "serwist": "9.5.13"
   },
   "devDependencies": {
+    "@playwright/test": "1.65.0",
     "@tailwindcss/postcss": "4.3.5",
     "@types/node": "24.19.2",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "tailwindcss": "4.3.5",
-    "typescript": "6.0.3"
+    "typescript": "6.0.3",
+    "vitest": "5.1.0"
   }
 }
