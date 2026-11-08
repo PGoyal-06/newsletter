@@ -1,0 +1,15 @@
+# Generated or vendored
+pnpm-lock.yaml
+**/dist/
+**/.next/
+**/coverage/
+apps/web/public/sw.js
+apps/web/public/swe-worker-*.js
+apps/web/test-results/
+apps/web/playwright-report/
+
+# Curated prose and installed skills: keep their formatting as written
+*.md
+.agents/
+.claude/
+.gstack/

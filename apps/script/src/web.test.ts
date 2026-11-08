@@ -26,7 +26,10 @@ describe("doGet", () => {
   it("responds with JSON content that parses", () => {
     vi.stubGlobal("ContentService", fakeContentService());
 
-    const out = doGet({} as GoogleAppsScript.Events.DoGet) as unknown as { content: string; mimeType: string };
+    const out = doGet({} as GoogleAppsScript.Events.DoGet) as unknown as {
+      content: string;
+      mimeType: string;
+    };
 
     expect(out.mimeType).toBe("JSON");
     expect(() => JSON.parse(out.content)).not.toThrow();
