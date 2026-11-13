@@ -14,8 +14,14 @@ export const buttonClasses = cva(
   },
 );
 
-export type ButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "className"> &
-  Required<VariantProps<typeof buttonClasses>> & { className?: string };
+// cva types every variant as `value | null | undefined`; `Required` drops only the
+// undefined, so NonNullable keeps `variant={null}` (an unstyled button) from compiling.
+type ButtonVariant = NonNullable<VariantProps<typeof buttonClasses>["variant"]>;
+
+export type ButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "className"> & {
+  variant: ButtonVariant;
+  className?: string;
+};
 
 /** The shared action control. Server safe: handlers come from client callers. */
 export function Button({ variant, className, type = "button", ...props }: ButtonProps) {
