@@ -14,7 +14,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | 1 | Stack & architecture | Foundation | done |
 | 2 | Coding standards & tooling | Foundation | done |
 | 3 | Data contract | Foundation | done |
-| 4 | Design system & UI foundation | Foundation | planned |
+| 4 | Design system & UI foundation | Foundation | done |
 | 5 | Core loop: today's feed | Slice 1 | planned |
 | 6 | In app reader | Slice 2 | planned |
 | 7 | Offline & freshness | Slice 3 | planned |
@@ -53,10 +53,18 @@ The shape everything shares: the `today.json` snapshot and its error envelope, t
 - [x] Test it: `/test data contract`
 Spec [0002](../specs/0002-data-contract.md) · code in `packages/contract`, `apps/script/src/contract.test.ts`, `apps/script/scripts/contract-bundle.test.ts`, `apps/web/src/features/feed/domain/contract.test.ts`
 
-### 4. Design system & UI foundation · needs a decision
+### 4. Design system & UI foundation · done
 A calm visual language for a reader with no counts and no backlog, plus base components (card, chip, banner, empty state) that meet WCAG 2.2 AA.
 **Done when:** `design.md` covers type, color, spacing, and components; components pass AA contrast, support iOS Dynamic Type, have VoiceOver labels, and have big tap targets.
-- [ ] Design it (spec): `/architect design system & UI foundation`
+- [x] Design it (spec): `/architect design system & UI foundation`
+- [x] Build it: `/develop design system & UI foundation`
+  - [x] Wire `DESIGN.md` tokens, self hosted fonts, the gallery flag, and the import guard (AC-1, AC-2, AC-3, AC-10, AC-11).
+  - [x] Thin thread: `IssueRow` in the `/dev/ui` gallery with axe, time, reflow, and offline font tests (AC-2, AC-3, AC-4, AC-9, AC-10).
+  - [x] `CategoryChips` radio group with keyboard tests (AC-5, AC-9).
+  - [x] `Button`, `StatusRegion`, `Banner`, and `EmptyState` with their gallery states (AC-6, AC-7, AC-8, AC-9).
+- [x] Verify it: `/check verify design system & UI foundation`
+- [x] Test it: `/test design system & UI foundation`
+Spec [0003](../specs/0003-design-system-ui-foundation/index.md) · design in `DESIGN.md` · code in `apps/web/src/features/design-system/`, `apps/web/src/app/globals.css`, `apps/web/src/app/dev/ui/`, `apps/web/e2e/design-system.spec.ts`
 
 ## Slice 1: Core loop
 

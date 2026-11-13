@@ -1,32 +1,83 @@
 @import "tailwindcss";
 
-/* Placeholder tokens. The design system feature (scope 4) replaces these. */
-:root {
-  --background: #ffffff;
-  --foreground: #111827;
-  --muted: #4b5563;
+/*
+ * Design tokens. DESIGN.md front matter is the source; this file follows it, never the
+ * reverse (spec 0003, token mapping table). Change a value there first, then here.
+ */
+@theme {
+  /* Only DESIGN.md colors exist: Tailwind's default palette is switched off. */
+  --color-*: initial;
+  --color-ground: #f5f7f8;
+  --color-surface: #ffffff;
+  --color-text: #14181c;
+  --color-text-muted: #5a636b;
+  --color-rule: #dde2e5;
+  --color-control: #7d868e;
+  --color-primary: #0b6e4f;
+  --color-on-primary: #ffffff;
+  --color-warning-bg: #fff4d6;
+  --color-warning: #7a4b00;
+  --color-error: #b42318;
+
+  /* Type scale, all rem, so it follows the iPhone text size setting. */
+  --text-display: 2.6rem;
+  --text-display--line-height: 0.95;
+  --text-display--letter-spacing: -0.025em;
+  --text-display--font-weight: 700;
+  --text-body: 1.0625rem;
+  --text-body--line-height: 1.35;
+  --text-body--font-weight: 400;
+  --text-label: 0.875rem;
+  --text-label--line-height: 1.3;
+  --text-label--font-weight: 600;
+  --text-meta: 0.8125rem;
+  --text-meta--line-height: 1.4;
+  --text-meta--font-weight: 400;
+  --text-mono: 0.8125rem;
+  --text-mono--line-height: 1.4;
+  --text-mono--font-weight: 400;
+
+  --radius-sm: 6px;
+
+  /* DESIGN.md spacing in px divided by 16. */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-gutter: 1.25rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0b0f14;
-    --foreground: #f3f4f6;
-    --muted: #9ca3af;
-  }
-}
-
+/* The font files are self hosted by next/font; it sets these variables on <html>. */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-muted: var(--muted);
+  --font-display: var(--font-bricolage);
+  --font-text: var(--font-atkinson-next);
+  --font-mono: var(--font-atkinson-mono);
+}
+
+/*
+ * Dynamic Type: the root size comes from the iPhone text size setting. Other browsers
+ * ignore the keyword and keep a 16px root. Unlayered and after the Tailwind import on
+ * purpose: the shorthand resets the family, so the family must follow it.
+ */
+html {
+  font: -apple-system-body;
+  font-family: var(--font-text);
+  color-scheme: light;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family:
-    system-ui,
-    -apple-system,
-    "Segoe UI",
-    sans-serif;
+  background-color: var(--color-ground);
+  color: var(--color-text);
+  font-size: var(--text-body);
+  line-height: var(--text-body--line-height);
+}
+
+@layer base {
+  /* One focus ring for every interactive element (DESIGN.md focus-ring). */
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
 }
