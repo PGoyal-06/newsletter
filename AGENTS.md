@@ -37,6 +37,7 @@ pnpm --filter script release       # ship the worker: typecheck, test, build, pu
 - Validate env at startup (`apps/web/src/env.ts`); never read `process.env` elsewhere.
 - Named exports only, except where Next requires a default (pages, layouts, `manifest.ts`, icon and route files).
 - Accessibility baseline: WCAG 2.2 AA on all UI.
+- Design system: build all UI to `DESIGN.md` (art direction and the product bar); token values live in CSS (`apps/web/src/app/globals.css`).
 - Conventional commits (`feat(web): …`, `fix(script): …`).
 - No package script may be named after a pnpm built in command (`deploy`, `install`, …); a test enforces it.
 
