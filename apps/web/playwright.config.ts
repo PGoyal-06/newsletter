@@ -7,6 +7,14 @@ import { GALLERY_OFF_PORT, PORT } from "./e2e/ports";
 // One build, two servers: Playwright starts web servers in order and waits for each, so
 // the second `next start` reuses the build the first one made. The gallery flag is read
 // per request, so the same build serves /dev/ui on one port and a 404 on the other.
+// Dummy secrets: env.ts requires them at start. Tests intercept /api/today with
+// page.route fixtures and never reach Apps Script (spec 0004).
+const SECRETS = {
+  APP_TOKEN: "e2e-app-token",
+  SCRIPT_URL: "https://script.invalid/exec",
+  SCRIPT_KEY: "e2e-script-key",
+};
+
 export default defineConfig({
   testDir: "e2e",
   fullyParallel: false,
@@ -20,14 +28,14 @@ export default defineConfig({
     {
       command: `pnpm build && pnpm exec next start -p ${PORT}`,
       url: `http://localhost:${PORT}`,
-      env: { ENABLE_UI_GALLERY: "1" },
+      env: { ...SECRETS, ENABLE_UI_GALLERY: "1" },
       reuseExistingServer: false,
       timeout: 180_000,
     },
     {
       command: `pnpm exec next start -p ${GALLERY_OFF_PORT}`,
       url: `http://localhost:${GALLERY_OFF_PORT}`,
-      env: { ENABLE_UI_GALLERY: "0" },
+      env: { ...SECRETS, ENABLE_UI_GALLERY: "0" },
       reuseExistingServer: false,
       timeout: 60_000,
     },

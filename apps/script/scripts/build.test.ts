@@ -43,11 +43,11 @@ beforeEach(async () => {
 });
 
 describe("worker build", () => {
-  it("passes the entry point check for doGet, onTimer and installTriggers", () => {
+  it("passes the entry point check for every entry point", () => {
     const { code, out } = build();
 
     expect(code).toBe(0);
-    expect(out).toContain("entry points OK: doGet, onTimer, installTriggers");
+    expect(out).toContain("entry points OK: doGet, onTimer, installTriggers, checkDriveAccess");
   });
 
   it("writes only Code.js and appsscript.json to dist", async () => {
@@ -72,7 +72,7 @@ describe("worker build", () => {
     expect(copied).toBe(await readFile(join(PKG, "appsscript.json"), "utf8"));
   });
 
-  it.each(["doGet", "onTimer", "installTriggers"])(
+  it.each(["doGet", "onTimer", "installTriggers", "checkDriveAccess"])(
     "fails the build and names %s when its globalThis assignment is missing",
     async (name) => {
       const broken = originalMain.replace(new RegExp(`^g\\.${name} = ${name};$`, "m"), "");

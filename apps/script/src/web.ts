@@ -1,11 +1,21 @@
-import { CONTRACT_VERSION } from "@newsletter/contract";
+import { driveSnapshotStore } from "./snapshot/adapters/drive";
+import { scriptProperties } from "./settings/adapters/properties";
+import { serveToday } from "./serve/domain/serve";
 
-/**
- * Web app entry. Scaffold placeholder: returns no mail data.
- * The core loop feature adds the key check and serves today's snapshot.
- */
-export function doGet(_e: GoogleAppsScript.Events.DoGet): GoogleAppsScript.Content.TextOutput {
-  return ContentService.createTextOutput(
-    JSON.stringify({ status: "scaffold", contractVersion: CONTRACT_VERSION }),
-  ).setMimeType(ContentService.MimeType.JSON);
+function sha256(value: string): number[] {
+  return Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, value, Utilities.Charset.UTF_8);
+}
+
+/** Web app entry: `?key=…` returns today's snapshot or an error envelope as JSON. */
+export function doGet(e: GoogleAppsScript.Events.DoGet): GoogleAppsScript.Content.TextOutput {
+  const key = e?.parameter?.key;
+  const response = serveToday(typeof key === "string" ? key : undefined, {
+    props: scriptProperties,
+    store: driveSnapshotStore,
+    digest: sha256,
+    log: (line) => console.log(line),
+  });
+  return ContentService.createTextOutput(JSON.stringify(response)).setMimeType(
+    ContentService.MimeType.JSON,
+  );
 }

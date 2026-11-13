@@ -4,7 +4,7 @@ import { build } from "esbuild";
 import { copyFile, mkdir, readFile, rm } from "node:fs/promises";
 import vm from "node:vm";
 
-const ENTRY_POINTS = ["doGet", "onTimer", "installTriggers"];
+const ENTRY_POINTS = ["doGet", "onTimer", "installTriggers", "checkDriveAccess"];
 
 // Top level declarations so the editor's Run menu lists each entry point. They are
 // hoisted, then the bundle above overwrites each one with the real function.
