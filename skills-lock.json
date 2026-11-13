@@ -1,125 +1,143 @@
 {
-  "version": 1,
+  "version": 2,
   "skills": {
     "apps-script-clasp-workflow": {
       "source": "bootgs/skills",
       "sourceType": "github",
       "skillPath": "skills/apps-script-clasp-workflow/SKILL.md",
-      "computedHash": "76eb5df6099f621565d6a66eca43ba59b48a71d6f7fd3e668400d9d73a7bad1d"
+      "computedHash": "198b3e92820751f5ad04af0858ea187d2926eb412f039a7c1da6ffb456f97197"
     },
     "apps-script-triggers": {
       "source": "bootgs/skills",
       "sourceType": "github",
       "skillPath": "skills/apps-script-triggers/SKILL.md",
-      "computedHash": "a4d513896941128b04c156c50c26556d4e1562337e704d4e9016ffb53ad94e6c"
+      "computedHash": "dd4df27ef930d000f3f1ce7f189976aed90eafde33decd5fa514dd1f92a0bc8a"
     },
     "architect": {
       "source": "jsmastery-pro/skills",
       "sourceType": "github",
       "skillPath": "skills/architect/SKILL.md",
-      "computedHash": "ff57c65a06ca4047420113d1eaa18e5002bc657224688b9350a1f06d77204327"
+      "computedHash": "1daa4e312fd487288aad638031e3a7ca9508adfa15f5cb38f38de2914e4f04fb"
     },
     "audit": {
       "source": "jsmastery-pro/skills",
       "sourceType": "github",
       "skillPath": "skills/audit/SKILL.md",
-      "computedHash": "a8d524118ce6d60911840ef31509f1f5551ce1099cb8fd8a241ed0859e5c62ed"
+      "computedHash": "2547dd1bb22e60048398153aceeb43f7fce3d8251c2d9627982c5cc4d887bb6a"
+    },
+    "axe-core": {
+      "source": "claude-dev-suite/claude-dev-suite",
+      "sourceType": "github",
+      "skillPath": "skills/accessibility/axe-core/SKILL.md",
+      "computedHash": "826b33a2674baf2401162f043afe509cc108ad83486ccf8e4db5bcb93fcb73be"
     },
     "check": {
       "source": "jsmastery-pro/skills",
       "sourceType": "github",
       "skillPath": "skills/check/SKILL.md",
-      "computedHash": "3f21e5cf83a65be1c0fd07fa9f4a75ae31f4f2d169d862be6aec6e6e7adb0382"
+      "computedHash": "1ae945920ec8869c36e58bb73e4c44da8f5bdc7bc5b9dec6d035215f4ccda3d3"
+    },
+    "cva-best-practices": {
+      "source": "joe-bell/cva",
+      "sourceType": "github",
+      "skillPath": "skills/cva-best-practices/SKILL.md",
+      "computedHash": "18b4a7324ba67ca4942c1d323a940895a0ab0f43d64f0b710c8a4dda30be663b"
     },
     "debug": {
       "source": "jsmastery-pro/skills",
       "sourceType": "github",
       "skillPath": "skills/debug/SKILL.md",
-      "computedHash": "bc5bffa19310d272abc205966b85f5f80d562ccfa16c39b1b92701026e676e30"
+      "computedHash": "5a2c9cbcdec4647974882c46ab9d9efecc6d8ea4e3f32393632be8c1290ca904"
     },
     "develop": {
       "source": "jsmastery-pro/skills",
       "sourceType": "github",
       "skillPath": "skills/develop/SKILL.md",
-      "computedHash": "42dc998560097e8fe95e78f08df574ef4e5110b9ceacdd5ae3fdf68808f51c59"
+      "computedHash": "3bf42d7f47d79a6a4c1fd9faab0a16d37e0b4e616d00de4f611db61063d40cd6"
     },
     "document": {
       "source": "jsmastery-pro/skills",
       "sourceType": "github",
       "skillPath": "skills/document/SKILL.md",
-      "computedHash": "90933443f204d2ed29c84730be87b7b5470f6819fccde6129aedad1df517fb92"
+      "computedHash": "2d4ab42a4ffe7cc64c340fefdbcaa2ce2a84110d9885c0c99b70a696024710d0"
     },
     "github-actions-hardening": {
       "source": "github/awesome-copilot",
       "sourceType": "github",
       "skillPath": "skills/github-actions-hardening/SKILL.md",
-      "computedHash": "10e35ff70fcf42e09295ffad0ac3203e4d6b6f74557cc3fa1654112b89e0eea2"
+      "computedHash": "ce7df8e90622480a41ffae4a81c78dbf4de3a6965cc21a91693efdf15fb3284c"
     },
     "next-bundle-optimizer": {
       "source": "vercel/next.js",
       "sourceType": "github",
       "skillPath": "skills/next-bundle-optimizer/SKILL.md",
-      "computedHash": "7c37f80887cf574e146b88d42cf7d8e847a96ac4cbd1a499672213a30a5ba8f5"
+      "computedHash": "2a2d38e9ba5476f6eef7a86cc1531801b454fdcd5ee8b96745973e01b5d25397"
     },
     "playwright-best-practices": {
       "source": "currents-dev/playwright-best-practices-skill",
       "sourceType": "github",
       "skillPath": "playwright-best-practices/SKILL.md",
-      "computedHash": "7eb144f734450fee649dc1d209114775ddda07cbf45be84fe969d3d4f3971dce"
+      "computedHash": "2b333994f6aeca15b2a3f46b327d817b4a497d9f10d6100abc0e4d07b32c0b0a"
     },
     "playwright-cli": {
       "source": "microsoft/playwright-cli",
       "sourceType": "github",
       "skillPath": "skills/playwright-cli/SKILL.md",
-      "computedHash": "835a0ebe31ba7481dd23afcb14782f8ef2d4195aad44ae296ccfbc6cfaadcb3f"
+      "computedHash": "d3c50339092b670cdda1ba2bed0bdee1c34247cdf70df475e8b7d83983a39e79"
     },
     "scope": {
       "source": "jsmastery-pro/skills",
       "sourceType": "github",
       "skillPath": "skills/scope/SKILL.md",
-      "computedHash": "cc3683a45b96c1b0ecb23f9aba64263be096cb3ef2487662c0fe7e7c3200fb70"
+      "computedHash": "384dbf12c45824c6a4f676b954ce2fd9b9746fa714f781a25c567ef32400298e"
     },
     "setup-pre-commit": {
       "source": "mattpocock/skills",
       "sourceType": "github",
       "skillPath": "skills/misc/setup-pre-commit/SKILL.md",
-      "computedHash": "7fc7b680161a5cb834b165e36efc2378ff63a1f80df0a9efd18448d366bea98a"
+      "computedHash": "98523a8db5977c41a095834df8697123bb845ff6ddbb9500733b161f11441a37"
     },
     "sync": {
       "source": "jsmastery-pro/skills",
       "sourceType": "github",
       "skillPath": "skills/sync/SKILL.md",
-      "computedHash": "005f989b25192d3dbb4bf4e89630a3c31da8ea45dd77939102f263052309e409"
+      "computedHash": "5a88ad828e9845a79162c7b7c05222ac530dd1ca862a4a4e16092a40bdb4f59c"
     },
     "tailwind-4-docs": {
       "source": "lombiq/tailwind-agent-skills",
       "sourceType": "github",
       "skillPath": "skills/tailwind-4-docs/SKILL.md",
-      "computedHash": "de756f5f03cc20a029983875b00b9dfef9d0ba8567d242c5cbb0262037d0a134"
+      "computedHash": "263961b82698e3defdb26dd6a1b7328044517e67a3bbe91c1b33bb2a4273f4ee"
     },
     "tailwind-design-system": {
       "source": "wshobson/agents",
       "sourceType": "github",
       "skillPath": "plugins/frontend-mobile-development/skills/tailwind-design-system/SKILL.md",
-      "computedHash": "4e5bfe5af9b5da504752432dc45ed605af350cf1489a58419afad4123a514f89"
+      "computedHash": "c807f0c9619e8c389879f55846c2e395956f1073ab6d01a93fbb30b340015ab1"
     },
     "tanstack-query": {
       "source": "tanstack-skills/tanstack-skills",
       "sourceType": "github",
       "skillPath": "plugins/tanstack-query/skills/tanstack-query/SKILL.md",
-      "computedHash": "b8a0477cd4d7bf8fa54d27f8e64d82388402f0d502591db50a357df5b9995c75"
+      "computedHash": "b27696896a18acff7cb9099d753effb74bdf4b4339881f941fea4cca56abb1fa"
     },
     "test": {
       "source": "jsmastery-pro/skills",
       "sourceType": "github",
       "skillPath": "skills/test/SKILL.md",
-      "computedHash": "87dd379cca618d8cb2ca3d5073ffa8be6755e5822e7834a3c0ebe06bd3853f1f"
+      "computedHash": "45c9c47797331cac473fc8d03ad4d1098ddba1f00fb81c43af9379378b2c75c1"
     },
     "vitest": {
       "source": "antfu/skills",
       "sourceType": "github",
       "skillPath": "skills/vitest/SKILL.md",
-      "computedHash": "90f1cee9326269c91b46a601b3a575491505d8e771009dacff01329381d45291"
+      "computedHash": "bd95e41d66d76da9008893c9bc48c30f0a68f352cd2b00017767f5e4c129501d"
+    },
+    "web-styling-cva": {
+      "source": "agents-inc/skills",
+      "sourceType": "github",
+      "skillPath": "src/skills/web-styling-cva/SKILL.md",
+      "computedHash": "b927c37a2798d299658b0fc3da444e0ae00370f7fa4188c47d3f533afb73ff29"
     }
   }
 }
