@@ -1,9 +1,12 @@
 import { defineConfig, devices } from "@playwright/test";
-
-const PORT = 4791;
+import { GALLERY_OFF_PORT, PORT } from "./e2e/ports";
 
 // End to end tests run against a production build (`next start`), on WebKit with an
 // iPhone profile, because the service worker is disabled in development.
+//
+// One build, two servers: Playwright starts web servers in order and waits for each, so
+// the second `next start` reuses the build the first one made. The gallery flag is read
+// per request, so the same build serves /dev/ui on one port and a 404 on the other.
 export default defineConfig({
   testDir: "e2e",
   fullyParallel: false,
@@ -13,10 +16,20 @@ export default defineConfig({
     baseURL: `http://localhost:${PORT}`,
   },
   projects: [{ name: "iphone-webkit", use: { ...devices["iPhone 15"] } }],
-  webServer: {
-    command: `pnpm build && pnpm exec next start -p ${PORT}`,
-    url: `http://localhost:${PORT}`,
-    reuseExistingServer: false,
-    timeout: 180_000,
-  },
+  webServer: [
+    {
+      command: `pnpm build && pnpm exec next start -p ${PORT}`,
+      url: `http://localhost:${PORT}`,
+      env: { ENABLE_UI_GALLERY: "1" },
+      reuseExistingServer: false,
+      timeout: 180_000,
+    },
+    {
+      command: `pnpm exec next start -p ${GALLERY_OFF_PORT}`,
+      url: `http://localhost:${GALLERY_OFF_PORT}`,
+      env: { ENABLE_UI_GALLERY: "0" },
+      reuseExistingServer: false,
+      timeout: 60_000,
+    },
+  ],
 });

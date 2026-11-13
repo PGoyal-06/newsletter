@@ -6,6 +6,29 @@ import globals from "globals";
 import tseslint from "typescript-eslint";
 
 const WEB = "apps/web/**/*.{js,jsx,mjs,ts,tsx}";
+const WEB_SRC = "apps/web/src/**/*.{ts,tsx}";
+const DS_UI = "apps/web/src/features/design-system/ui/**";
+
+const DS_MESSAGE =
+  "Import design system components from '@/features/design-system/ui' (its index.ts), never a file inside it.";
+
+// Any import string that reaches into design-system/ui past its index, by alias or path.
+const DS_DEEP_IMPORT = [
+  { regex: "(^|/)design-system/ui/(?!index(\\.tsx?)?$).+", message: DS_MESSAGE },
+];
+// From a sibling folder in the same feature, e.g. "../ui/IssueRow".
+const DS_SIBLING_IMPORT = [{ regex: "^(\\.\\./)+ui/(?!index(\\.tsx?)?$).+", message: DS_MESSAGE }];
+
+const DOMAIN_IMPORTS = [
+  {
+    group: ["next", "next/*", "react", "react-dom", "@tanstack/*"],
+    message: "Domain code is framework free.",
+  },
+  {
+    group: ["**/adapters/**"],
+    message: "Domain code must not import adapters; adapters depend on the domain.",
+  },
+];
 
 // Apps Script services. Domain code must take facades instead (AGENTS.md, Clean Architecture).
 const APPS_SCRIPT_GLOBALS = [
@@ -104,25 +127,27 @@ export default tseslint.config(
     },
   },
 
+  // The design system is the one feature others may import from, and only through its
+  // index (spec 0003, AC-11). Applies to every web file outside the ui folder itself.
+  {
+    files: [WEB_SRC],
+    ignores: [DS_UI],
+    rules: { "no-restricted-imports": ["error", { patterns: DS_DEEP_IMPORT }] },
+  },
+  {
+    // Inside the design-system feature, a sibling folder reaches ui through "../ui".
+    files: ["apps/web/src/features/design-system/**/*.{ts,tsx}"],
+    ignores: [DS_UI],
+    rules: {
+      "no-restricted-imports": ["error", { patterns: [...DS_DEEP_IMPORT, ...DS_SIBLING_IMPORT] }],
+    },
+  },
+
   // Domain layers stay pure: no frameworks, no Apps Script services, no network.
   {
     files: ["**/domain/**/*.{ts,tsx}"],
     rules: {
-      "no-restricted-imports": [
-        "error",
-        {
-          patterns: [
-            {
-              group: ["next", "next/*", "react", "react-dom", "@tanstack/*"],
-              message: "Domain code is framework free.",
-            },
-            {
-              group: ["**/adapters/**"],
-              message: "Domain code must not import adapters; adapters depend on the domain.",
-            },
-          ],
-        },
-      ],
+      "no-restricted-imports": ["error", { patterns: DOMAIN_IMPORTS }],
       "no-restricted-globals": [
         "error",
         ...APPS_SCRIPT_GLOBALS.map((name) => ({
@@ -131,6 +156,14 @@ export default tseslint.config(
         })),
         { name: "fetch", message: "Take an HTTP facade from adapters/ instead." },
       ],
+    },
+  },
+  {
+    // A later block replaces an earlier block's options for the same rule, so web domain
+    // files get both lists here.
+    files: ["apps/web/src/**/domain/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": ["error", { patterns: [...DOMAIN_IMPORTS, ...DS_DEEP_IMPORT] }],
     },
   },
 

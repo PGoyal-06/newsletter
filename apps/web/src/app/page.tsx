@@ -2,9 +2,9 @@
 // the service worker precaches "/" so the app opens offline.
 export default function Home() {
   return (
-    <main className="flex flex-1 flex-col items-center justify-center gap-2 px-4 py-12 text-center">
-      <h1 className="text-2xl font-semibold">Morning Feed</h1>
-      <p className="text-base text-muted">Today&apos;s newsletters will show up here.</p>
+    <main className="flex flex-1 flex-col gap-md px-gutter py-2xl">
+      <h1 className="font-display text-display">Morning Feed</h1>
+      <p className="text-body text-text-muted">Today&apos;s newsletters will show up here.</p>
     </main>
   );
 }
