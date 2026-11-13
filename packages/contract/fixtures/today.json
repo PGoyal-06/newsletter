@@ -1,0 +1,19 @@
+{
+  "ok": true,
+  "contractVersion": 1,
+  "generatedAt": 1794398400000,
+  "items": [
+    {
+      "id": "19a701",
+      "threadId": "19a700",
+      "sender": "Morning Notes",
+      "senderEmail": "notes@example.com",
+      "listId": "notes.example.com",
+      "subject": "A quieter morning",
+      "receivedAt": 1794394800000,
+      "category": "Reading",
+      "content": { "kind": "text", "text": "Your morning reading." },
+      "gmailUrl": "https://mail.google.com/mail/u/0/#all/19a700"
+    }
+  ]
+}
