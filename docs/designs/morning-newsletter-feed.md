@@ -6,6 +6,8 @@ Repo: PGoyal-06/newsletter
 Status: APPROVED
 Mode: Startup
 
+> **Note (2026-11-13):** this is the original product design. Where it differs from the specs in `docs/specs/` (0001 stack, 0002 data contract, 0003 design system, 0004 core loop), the specs win. Known differences include: the web app is not a static export (it has a server proxy route), the phone stores an app token instead of the script URL and key, the snapshot carries explicit content variants instead of `html | null`, the worker writes a new Drive file per run, and new mail is found by searching all mail since the last run, not `in:inbox newer_than:2d`.
+
 ## Problem Statement
 
 Parth subscribes to 12+ newsletters (TLDR family, Half Baked, Idea Browser, The Batch, Codedex, news.network.ai, more). They land in a Gmail inbox with 17,000+ unread emails. The unread count itself is aversive: "seeing such a massive unread emails number (17000+) on the gmail app just doesn't make me wanna open the app altogether." The newsletters are valuable when they reach Parth ("I sometimes find one ... and go through it, read any interesting articles"), but they are trapped behind an inbox Parth avoids.
@@ -72,7 +74,7 @@ Gmail ──(every 15 min, Apps Script trigger, runs as owner)──┐
                                                             ▼
 Apps Script doGet(?key=SECRET) → returns today.json (ContentService, JSON)
                                                             ▼
-Next.js PWA (Vercel, static/client-side) → service worker caches shell + last JSON
+Next.js PWA (Vercel, static shell + /api/today proxy route) → service worker caches shell; snapshot cached in IndexedDB
   → feed (cards + category filter) → reader (sanitized, sandboxed iframe)
 ```
 
@@ -91,8 +93,8 @@ Next.js PWA (Vercel, static/client-side) → service worker caches shell + last 
 - **Never deletes.** Only label and archive operations.
 
 **Frontend (Next.js PWA on Vercel free tier):**
-- Client-side app (static export is enough); `manifest.json` + service worker.
-- **First run:** setup screen to paste the doGet URL+key; stored in localStorage of the installed PWA (iOS home-screen apps have their own storage separate from Safari, so key entry happens after Add to Home Screen).
+- Statically rendered app shell plus one server route, `/api/today`, which calls Apps Script with the script key so no Google secret reaches the phone (spec 0001); `manifest.ts` + service worker.
+- **First run:** setup screen to paste the app token (a secret the proxy checks); stored in IndexedDB of the installed PWA (iOS home-screen apps have their own storage separate from Safari, so key entry happens after Add to Home Screen).
 - **Open flow:** load the cached `today.json`, **drop every item whose `receivedAt` is older than 24h by the device clock**, render the rest immediately with "Updated 7:15am", fetch fresh in the background, swap in (applying the same 24h filter). Pull-to-refresh calls `?refresh=1`. This keeps the feed today-only even after skipped days or an offline commute: stale cache never becomes a backlog.
 - **Unsorted cards** show sender, subject and time with an "Open in Gmail" action (`gmailUrl`) instead of the in-app reader.
 - **Feed:** one card per issue: sender, subject, time, category chip. Category filter chips at the top; last selection remembered. No unread dots, no counts.

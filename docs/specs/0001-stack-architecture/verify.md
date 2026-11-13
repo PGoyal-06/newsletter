@@ -14,7 +14,7 @@ _Steps derived from the scope's Done when and the spec's scaffold gate (spec 000
 - [x] `pnpm --filter script build` → prints `entry points OK: doGet, onTimer, installTriggers`; `dist/` holds only `Code.js` and `appsscript.json` → D-5
 - [x] Remove the `g.onTimer = onTimer;` line from `apps/script/src/main.ts`, then build → exits 1 with `entry points not assigned to globalThis: onTimer`; put the line back → D-5
 - [x] `pnpm --filter web build` → the `/` route shows `○ (Static)`; `apps/web/public/sw.js` exists and its precache list includes `{'url':'/'}` → D-3, D-4
-- [ ] _Deferred to core loop (agreed 2026-11-08): `apps/web` does not import the contract yet._ Change `CONTRACT_VERSION` in `packages/contract/src/index.ts` to a string, then run a typecheck in a package that imports it with a number typed use → fails (only meaningful once spec 0002 adds real shapes; for now confirm both apps import the package) → D-6
+- [x] _Moved to spec 0004 (2026-11-13). Tried on 2026-11-13: with `CONTRACT_VERSION` changed to a string, only `packages/contract` failed typecheck; `apps/script` and `apps/web` passed, because neither has real producer or consumer code yet. Spec 0004's critical test "Contract drift" now owns this guarantee._ Original step: change `CONTRACT_VERSION` in `packages/contract/src/index.ts` to a string, then run a typecheck in a package that imports it with a number typed use → fails (only meaningful once spec 0002 adds real shapes; for now confirm both apps import the package) → D-6
 
 ## UI / manual (browser)
 - [x] `pnpm --filter web start -p <free port>`, open `/` in a browser → "Morning Feed" heading and the placeholder line render → D-3
