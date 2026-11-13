@@ -21,6 +21,12 @@ describe("web app manifest", () => {
     ]);
   });
 
+  // covers: spec 0003 AC-1 (splash and status bar match the DESIGN.md ground color)
+  it("uses the DESIGN.md ground color for the theme and the splash background", () => {
+    expect(m.theme_color).toBe("#F5F7F8");
+    expect(m.background_color).toBe("#F5F7F8");
+  });
+
   it("has a short name that fits under a home screen icon", () => {
     expect(m.short_name?.length ?? 0).toBeGreaterThan(0);
     expect(m.short_name!.length).toBeLessThanOrEqual(12);

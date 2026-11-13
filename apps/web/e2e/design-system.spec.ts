@@ -313,6 +313,130 @@ test.describe("banners, empty states, and buttons", () => {
     const box = await page.getByRole("button", { name: "Open today's feed" }).boundingBox();
     expect(box!.height).toBeGreaterThanOrEqual(48);
   });
+
+  // covers: AC-8 (pressed state)
+  test("buttons, the banner action, and chips dim to 0.7 while pressed, and recover", async ({
+    page,
+  }) => {
+    await openGallery(page);
+
+    for (const control of [
+      page.getByRole("button", { name: "Open today's feed" }),
+      page.getByRole("button", { name: "Show all" }).last(),
+      page.getByRole("button", { name: "Retry" }),
+      page.getByRole("radio", { name: "Tech" }),
+    ]) {
+      await control.scrollIntoViewIfNeeded();
+      const box = (await control.boundingBox())!;
+      await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+
+      await page.mouse.down();
+      await expect(control).toHaveCSS("opacity", "0.7");
+      await page.mouse.up();
+
+      await expect(control).toHaveCSS("opacity", "1");
+    }
+  });
+
+  // covers: AC-8 (Button defaults to type="button", so it never submits a form by accident)
+  test("every design system button is type=button", async ({ page }) => {
+    await openGallery(page);
+
+    const types = await page
+      .locator("main button")
+      .evaluateAll((buttons) => [...new Set(buttons.map((b) => b.getAttribute("type")))]);
+
+    expect(types).toEqual(["button"]);
+  });
+
+  // covers: AC-6 (the stale banner's action calls the handler the caller passed)
+  test("the stale banner's Retry calls its handler", async ({ page }) => {
+    await openGallery(page);
+
+    await page.getByRole("button", { name: "Retry" }).click();
+
+    await expect(page.getByTestId("last-action")).toHaveText("Last action: Retry");
+  });
+
+  // covers: AC-7 (an empty state without an action renders no button)
+  test("the day empty state shows message and detail with no action", async ({ page }) => {
+    await openGallery(page);
+    const section = page.getByRole("region", { name: "Empty states" });
+    const dayEmpty = section.locator("div", { hasText: "Nothing new today." }).last();
+
+    await expect(dayEmpty).toContainText("Everything older is in Gmail under Newsletters.");
+    await expect(dayEmpty.getByRole("button")).toHaveCount(0);
+  });
+
+  // covers: AC-5 (a tap selects too, not only the keyboard)
+  test("tapping a chip selects it and moves the tab stop to it", async ({ page }) => {
+    await openGallery(page);
+    const group = page.getByRole("radiogroup", { name: "Category" });
+
+    await group.getByRole("radio", { name: "Design" }).click();
+
+    await expect(group.getByRole("radio", { name: "Design" })).toHaveAttribute(
+      "aria-checked",
+      "true",
+    );
+    await expect(group.getByRole("radio", { name: "All" })).toHaveAttribute(
+      "aria-checked",
+      "false",
+    );
+    await expect(group.locator('[tabindex="0"]')).toHaveText("Design");
+    await expect(page.getByText("Selected: design")).toBeVisible();
+  });
+});
+
+// The Value sourcing rows of spec 0003: the row time comes from the phone's own timezone
+// and locale, derived in the browser after mount, never on the server.
+test.describe("issue row time sourcing", () => {
+  test.describe("in Tokyo", () => {
+    test.use({ locale: "en-US", timezoneId: "Asia/Tokyo" });
+
+    // covers: AC-4 (timezone is the phone's; "today" is the phone's local midnight)
+    test("shows Tokyo times and drops the weekday when both issues are today there", async ({
+      page,
+    }) => {
+      await openGallery(page);
+
+      // 11:02Z is 8:02 PM and 02:40Z is 11:40 AM on Nov 12 in Tokyo; now is 9:15 PM there.
+      await expect(page.getByRole("link", { name: /^Morning Brew/ }).locator("time")).toHaveText(
+        "8:02 PM",
+      );
+      await expect(page.getByRole("link", { name: /^Stratechery/ }).locator("time")).toHaveText(
+        "11:40 AM",
+      );
+    });
+  });
+
+  test.describe("in German", () => {
+    test.use({ locale: "de-DE", timezoneId: "America/New_York" });
+
+    // covers: AC-4 (the locale decides the clock format and the weekday join)
+    test("uses the German 24 hour clock and weekday form", async ({ page }) => {
+      await openGallery(page);
+
+      await expect(page.getByRole("link", { name: /^Morning Brew/ }).locator("time")).toHaveText(
+        "6:02",
+      );
+      await expect(page.getByRole("link", { name: /^Stratechery/ }).locator("time")).toHaveText(
+        "Mi. 21:40",
+      );
+    });
+  });
+
+  // covers: AC-4 (nothing formats a time at build or on the server)
+  test("the server HTML carries the ISO dateTime but no formatted time", async ({ request }) => {
+    const html = await (await request.get(GALLERY)).text();
+    const times = [...html.matchAll(/<time[^>]*dateTime="([^"]+)"[^>]*>([^<]*)<\/time>/g)];
+
+    expect(times.length).toBe(6);
+    for (const [, dateTime, text] of times) {
+      expect(dateTime).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
+      expect(text).toBe("");
+    }
+  });
 });
 
 test.describe("fonts", () => {

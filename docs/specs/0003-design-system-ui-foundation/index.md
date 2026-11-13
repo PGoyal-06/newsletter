@@ -1,7 +1,7 @@
 # 0003. Design system tokens and base components for the web app
 
 **Date**: 2026-11-12
-**Status**: In Progress
+**Status**: Accepted
 
 The why (context, options considered, rationale) is in [rationale.md](rationale.md).
 
