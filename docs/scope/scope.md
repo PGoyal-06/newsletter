@@ -13,7 +13,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 |---|---------|-------|--------|
 | 1 | Stack & architecture | Foundation | done |
 | 2 | Coding standards & tooling | Foundation | done |
-| 3 | Data contract | Foundation | planned |
+| 3 | Data contract | Foundation | done |
 | 4 | Design system & UI foundation | Foundation | planned |
 | 5 | Core loop: today's feed | Slice 1 | planned |
 | 6 | In app reader | Slice 2 | planned |
@@ -41,10 +41,17 @@ Capture conventions from the real scaffold, then install lint, format, and pre c
 - [x] Capture conventions + tooling choices: `/audit`
 Code in `eslint.config.mjs`, `.prettierrc.json`, `.husky/`, `.lintstagedrc.json`, `.github/workflows/ci.yml`
 
-### 3. Data contract · needs a decision
+### 3. Data contract · done
 The shape everything shares: the `today.json` snapshot and its error envelope, the category map (keyed by List-Id, then sender), and the stored script settings (last processed time, secret key, archiving switch).
 **Done when:** the snapshot, error, and category map shapes are fixed in a spec, including what Unsorted items carry, so later slices never need a breaking change.
-- [ ] Design it (spec): `/architect data contract`
+- [x] Design it (spec): `/architect data contract`
+- [x] Build it: `/develop data contract`
+  - [x] Prove one shared snapshot fixture across worker and web (AC-1, AC-2, AC-5, AC-8).
+  - [x] Complete types, normalization, and validation for all shared shapes (AC-1 through AC-6, AC-8).
+  - [x] Verify JSON round trips, input preservation, and both runtime bundles (AC-7, AC-8).
+- [x] Verify it: `/check verify data contract`
+- [x] Test it: `/test data contract`
+Spec [0002](../specs/0002-data-contract.md) · code in `packages/contract`, `apps/script/src/contract.test.ts`, `apps/script/scripts/contract-bundle.test.ts`, `apps/web/src/features/feed/domain/contract.test.ts`
 
 ### 4. Design system & UI foundation · needs a decision
 A calm visual language for a reader with no counts and no backlog, plus base components (card, chip, banner, empty state) that meet WCAG 2.2 AA.
