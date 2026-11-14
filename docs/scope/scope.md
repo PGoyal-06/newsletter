@@ -73,11 +73,11 @@ The thinnest real thread and the walking skeleton: the script finds new newslett
 **Done when:** a newsletter that arrives in Gmail shows up as a card (sender, subject, time) on the phone within 15 minutes; a wrong key sends you to setup, and a server error does not.
 - [x] Design it (spec): `/architect core loop`
 - [ ] Build it: `/develop core loop`
-  - [ ] Thin thread: Drive access check, then one real newsletter from Gmail to the installed iPhone app (AC-5, AC-7, AC-8, AC-9, AC-10, AC-14, AC-15, AC-16).
-  - [ ] Worker processing: settings, category map and header helper, labels, oldest first catch up, lock and budgets (AC-1, AC-2, AC-6, AC-12, AC-13).
+  - [x] Thin thread: Drive access check, then one real newsletter from Gmail to the installed iPhone app (AC-5, AC-7, AC-8, AC-9, AC-10, AC-14, AC-15, AC-16).
+  - [ ] Worker processing: settings, category map and header helper, labels, oldest first catch up, lock and budgets, plus the truthful row destination line (AC-1, AC-2, AC-6, AC-10, AC-12, AC-13).
   - [ ] Snapshot and publish: label candidates, content and size rules, full publish protocol and cleanup, in window relabel, refresh (AC-3 to AC-7, AC-15, AC-16).
-  - [ ] Phone states: setup key check and change link, error banner and retries, 24 hour filter, masthead (AC-8 to AC-11).
-  - [ ] Real phone pass: Gmail link landing, snapshot size, run durations (AC-14, AC-16).
+  - [x] Phone states: setup key check and change link, error banner and retries, 24 hour filter, masthead (AC-8 to AC-11).
+  - [ ] Real phone pass: Done from mapped and Unsorted rows, snapshot size, run durations (AC-14, AC-16).
 - [ ] Verify it: `/check verify core loop`
 - [ ] Test it: `/test core loop`
 Spec [0004](../specs/0004-core-loop-todays-feed/index.md) · code in `apps/script/src/`, `apps/web/src/features/feed/`, `apps/web/src/app/api/today/`
@@ -86,7 +86,8 @@ Spec [0004](../specs/0004-core-loop-todays-feed/index.md) · code in `apps/scrip
 
 ### 6. In app reader · needs a decision · GA
 Tap a card to read the full issue inside the app, cleaned for a phone: sanitized, scripts blocked, tracking pixels dropped, sandboxed, with links opening outside.
-**Done when:** a mapped issue opens readable at phone width with no horizontal scroll, no script runs, and links open in Safari's sheet; plain text issues render too.
+Also owns where Gmail links land: in the spec 0004 phone test, a row opened the Gmail inbox with its unread count instead of the issue (design concern R2-13). Unsorted rows and the reader's "Open in Gmail" will keep using Gmail, so they must land on the issue itself.
+**Done when:** a mapped issue opens readable at phone width with no horizontal scroll, no script runs, and links open in Safari's sheet; plain text issues render too; an Unsorted row and "Open in Gmail" land on that issue, never the Gmail inbox.
 - [ ] Design it (spec): `/architect in app reader`
 
 ## Slice 3: Offline & freshness

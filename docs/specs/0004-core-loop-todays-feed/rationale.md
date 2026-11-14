@@ -98,3 +98,23 @@ A thread carrying only the sublabel `Newsletters/Test`, and not the parent `News
 ### Task 1: Drive read back (2026-11-13)
 
 Under the pinned `drive.file` scope, the Drive advanced service (v3) creates, reads, lists, and permanently deletes the worker's own files. `Files.get` with `alt: "media"` returns a JSON file already parsed into an object, with its own key order. Every value survives unchanged (13 digit epoch numbers, unicode, empty strings, `null`, array order). The adapter serializes that object back to text, and callers validate by meaning (`isTodaySnapshot`), which ignores key order.
+
+### Task 1: Phone test (2026-11-13)
+
+On the installed iPhone app, a real feed showed, and a tap on a row opened a Safari sheet on the Gmail web **inbox**, with its unread count, not the newsletter's thread. Done returned to the feed with its state intact. The landing comes from the link address (`#all/<threadId>` is apparently not honoured by Gmail's mobile web), not from how the link opens. The fallback belongs to the reader spec (slice 2), per design concern R2-13.
+
+## Decisions after the build (2026-11-13)
+
+### How a row opens Gmail
+
+- **Chosen: new tab** (`target="_blank" rel="noopener noreferrer"`, as `IssueRow` already does under spec 0003 AC-4). It is what the phone test ran on, and Done came back intact, which AC-14 requires. `noreferrer` also keeps the app's address from Gmail.
+- **Same tab** (what this spec first said): rejected. Untested on the phone, risks the installed app navigating away and reloading on return (losing the feed state), changes a shipped component and its tests, and does not fix the inbox landing.
+- **Gmail app deep link** (`googlegmail://`): rejected here. Undocumented, fails without the app installed, and it is the reader slice's question.
+
+The engineer first picked same tab, then switched to new tab after the evidence above.
+
+### What the third line says on rows that open Gmail
+
+- **Chosen: say what's true.** Unsorted rows keep "Unsorted · opens in Gmail"; mapped rows say "Opens in Gmail". Keeps `DESIGN.md`'s rule that the destination is known before the tap, and keeps VoiceOver accurate. Costs a small `IssueRow` props change and one extra line on mapped rows until slice 2 sends them to the reader.
+- **No line on mapped rows:** rejected; for one slice a mapped row would open Gmail without saying so.
+- **Leave it until slice 2:** rejected; from task 2 on, every mapped row would wrongly say "Unsorted". The engineer leaned this way for simplicity, then went with the recommendation.
