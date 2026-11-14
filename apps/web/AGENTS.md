@@ -14,10 +14,12 @@ Next.js 16 App Router PWA installed to the iPhone home screen. Opens offline fro
 | `src/app/page.tsx` | The shell; must stay statically rendered |
 | `src/app/globals.css` | Design tokens from `DESIGN.md` (Tailwind v4 `@theme`), iOS Dynamic Type root, focus ring |
 | `src/app/layout.tsx` | Self hosted fonts (`next/font/google`) exposed as CSS variables |
-| `src/env.ts` | The only `process.env` reader (server only); validated at start by `src/instrumentation.ts` |
+| `src/env.ts` | The only `process.env` reader (server only); validated at build by `next.config.ts` (a bad or missing secret fails the build and the Vercel deploy) and at start by `src/instrumentation.ts` |
 | `src/features/design-system/ui/index.ts` | Public entry for the base components (`IssueRow`, `CategoryChips`, `Button`, `StatusRegion`, `Banner`, `EmptyState`) |
 | `src/app/dev/ui/page.tsx` | Component gallery; 404 unless `ENABLE_UI_GALLERY=1` |
 | `vercel.json` | Install and build commands for Vercel |
+| `src/app/api/today/route.ts` | `GET /api/today`, wiring only; the proxy logic is `features/feed/adapters/todayRoute.ts` |
+| `src/features/feed/` | The core loop: `domain/` (bearer parsing, upstream and response classification, 24 hour filter), `adapters/` (proxy handler, `/api/today` client, token store), `ui/` (`FeedApp` root, `SetupForm`, `Feed`) |
 
 ## Commands
 
@@ -39,6 +41,9 @@ pnpm --filter web test:e2e      # Playwright WebKit iPhone: one build, two serve
 - New variant components use `class-variance-authority`; type a required variant as `NonNullable<VariantProps<…>["variant"]>`, because cva adds `null`.
 - One sanctioned `process.env` read outside `src/env.ts`: `NODE_ENV` in `design-system/ui/isDevelopment.ts` (a build constant, for dev only guards in client components).
 - `ENABLE_UI_GALLERY` stays unset in every deployed environment (Vercel included).
+- `APP_TOKEN`, `SCRIPT_URL` (https only) and `SCRIPT_KEY` are required and trimmed. Locally they go in `.env.local` (Vercel's are hidden secrets, so `vercel env pull` cannot fetch them); CI (`.github/workflows/ci.yml`) and the Playwright servers set dummy values, and tests never call Apps Script.
+- The phone stores only its token, in IndexedDB through `idb-keyval` (key `appToken`).
+- `/api/today` answers only a valid snapshot (200, `no-store`), a bare 401, or the 502 `internal` envelope, and logs a fixed stage name, never the upstream URL.
 - Components are tested in Playwright WebKit against the `/dev/ui` gallery (real layout, fonts, axe), not jsdom; add new component states to the gallery.
 
 ## Gotchas
@@ -46,6 +51,8 @@ pnpm --filter web test:e2e      # Playwright WebKit iPhone: one build, two serve
 - iOS keeps Safari and home screen storage separate; setup must happen inside the installed app.
 - Playwright WebKit is not a real home screen PWA; check each slice on the phone too.
 - Vercel function responses cap near 4.5MB; the snapshot is 1 to 2MB today.
+- `page.route` cannot see `/api/*` requests the service worker makes, so e2e specs that fake `/api/today` block service workers (`serviceWorkers: "block"`).
+- To simulate a return to the foreground, dispatch `visibilitychange` with `bubbles: true`; TanStack Query listens on `window`.
 - `next build` typechecks test files too, so a failing type assertion in a `*.test.ts` breaks the production build and the e2e run.
 - Builds fetch the fonts from Google (`next/font/google`), so a build needs network access.
 - Plain Tab in WebKit skips links and buttons (Safari's default); e2e focus walks use `Alt+Tab`.
@@ -64,5 +71,6 @@ pnpm --filter web test:e2e      # Playwright WebKit iPhone: one build, two serve
 
 - [0001 stack & architecture](../../docs/specs/0001-stack-architecture/index.md)
 - [0003 design system & UI foundation](../../docs/specs/0003-design-system-ui-foundation/index.md)
+- [0004 core loop: today's feed](../../docs/specs/0004-core-loop-todays-feed/index.md)
 
 _Drafted by /audit from the repo, worth a quick human pass. Edit freely: once a line stops matching this draft, later runs treat it as curated and will flag rather than overwrite it._

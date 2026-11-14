@@ -73,10 +73,10 @@ The thinnest real thread and the walking skeleton: the script finds new newslett
 **Done when:** a newsletter that arrives in Gmail shows up as a card (sender, subject, time) on the phone within 15 minutes; a wrong key sends you to setup, and a server error does not.
 - [x] Design it (spec): `/architect core loop`
 - [ ] Build it: `/develop core loop`
-  - [ ] Thin thread: Drive access check, then one real newsletter from Gmail to the installed iPhone app (AC-5, AC-7, AC-8, AC-9, AC-10, AC-14, AC-15, AC-16).
+  - [x] Thin thread: Drive access check, then one real newsletter from Gmail to the installed iPhone app (AC-5, AC-7, AC-8, AC-9, AC-10, AC-14, AC-15, AC-16).
   - [ ] Worker processing: settings, category map and header helper, labels, oldest first catch up, lock and budgets (AC-1, AC-2, AC-6, AC-12, AC-13).
   - [ ] Snapshot and publish: label candidates, content and size rules, full publish protocol and cleanup, in window relabel, refresh (AC-3 to AC-7, AC-15, AC-16).
-  - [ ] Phone states: setup key check and change link, error banner and retries, 24 hour filter, masthead (AC-8 to AC-11).
+  - [x] Phone states: setup key check and change link, error banner and retries, 24 hour filter, masthead (AC-8 to AC-11).
   - [ ] Real phone pass: Gmail link landing, snapshot size, run durations (AC-14, AC-16).
 - [ ] Verify it: `/check verify core loop`
 - [ ] Test it: `/test core loop`
