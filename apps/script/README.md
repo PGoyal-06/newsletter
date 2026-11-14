@@ -33,3 +33,14 @@ Only `src/main.ts` touches Apps Script globals. Every entry point must be assign
   - Vercel project env (Production and Preview): `APP_TOKEN`, `SCRIPT_URL` (the `/exec` URL), `SCRIPT_KEY` (same value as above).
 
 After this, every later change ships with `pnpm --filter script release`.
+
+## Core loop checks (spec 0004, task 1)
+
+- [ ] **Drive access check.** After `release`, run `checkDriveAccess` from the editor's Run menu.
+  Google may ask you to consent again, because the Drive advanced service is now on. The scopes stay the same three.
+  Expect `create_folder=ok create_file=ok read_file=ok list_folder=ok delete_file=ok delete_folder=ok`.
+  If any step says `FAILED`, stop: never widen the Drive scope. Take it back to `/architect core loop`.
+- [ ] **Parent label search.** In Gmail, put only a sublabel such as `Newsletters/Test` (not `Newsletters` itself) on one thread, and make sure no thread has the parent label.
+  Run `checkDriveAccess` again and read `label:Newsletters threads=N`. A number above 0 means parent label search also matches sublabels.
+  Record the answer in `docs/specs/0004-core-loop-todays-feed/rationale.md`, then remove the test label.
+- [ ] **First real run.** Run `onTimer` once from the editor. The log line reads `outcome=success … items=N bytes=B ms=T`.

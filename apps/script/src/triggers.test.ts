@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { installTriggers, TIMER_HANDLER } from "./triggers";
+import { installTriggers, onTimer, TIMER_HANDLER } from "./triggers";
 
 type FakeTrigger = { handler: string; everyMinutes: number; getHandlerFunction(): string };
 
@@ -96,5 +96,62 @@ describe("installTriggers", () => {
     expect(app.installed.map((t) => t.handler).sort()).toEqual(
       [TIMER_HANDLER, "somethingElse"].sort(),
     );
+  });
+});
+
+// covers: spec 0004 AC-6 (any outcome but success throws from onTimer, so Google's
+// failure email fires). The services are faked at the global level the adapters use.
+describe("onTimer", () => {
+  function stubWorkerServices(search: () => unknown[]) {
+    const props: Record<string, string> = {};
+    const files = new Map<string, string>();
+    let next = 1;
+    vi.stubGlobal("GmailApp", { search });
+    vi.stubGlobal("PropertiesService", {
+      getScriptProperties: () => ({
+        getProperty: (k: string) => props[k] ?? null,
+        setProperty: (k: string, v: string) => {
+          props[k] = v;
+        },
+      }),
+    });
+    vi.stubGlobal("Utilities", {
+      newBlob: (data: string) => ({ getDataAsString: () => data, data }),
+    });
+    vi.stubGlobal("Drive", {
+      Files: {
+        create: (_meta: unknown, blob?: { data: string }) => {
+          const id = `id${next++}`;
+          if (blob) files.set(id, blob.data);
+          return { id };
+        },
+        // Like the real service: a JSON file comes back already parsed.
+        get: (id: string) => JSON.parse(files.get(id) ?? "null"),
+      },
+    });
+    return props;
+  }
+
+  beforeEach(() => {
+    vi.spyOn(console, "log").mockImplementation(() => {});
+  });
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
+
+  it("throws when the run fails, naming only the stage", () => {
+    stubWorkerServices(() => {
+      throw new Error("Service invoked too many times for one day: gmail.");
+    });
+
+    expect(() => onTimer()).toThrow("onTimer failed: run_failed");
+  });
+
+  it("returns normally after a successful run, with the pointer set", () => {
+    const props = stubWorkerServices(() => []);
+
+    expect(() => onTimer()).not.toThrow();
+    expect(props.snapshotFileId).toBeDefined();
   });
 });

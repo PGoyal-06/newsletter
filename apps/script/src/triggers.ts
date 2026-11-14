@@ -1,11 +1,23 @@
+import { searchMessages } from "./mail/adapters/gmail";
+import { runThin } from "./run/run";
+import { driveSnapshotStore } from "./snapshot/adapters/drive";
+import { scriptProperties } from "./settings/adapters/properties";
+
 export const TIMER_HANDLER = "onTimer";
 
 /**
- * Time driven trigger entry, every 15 minutes.
- * Scaffold placeholder: the core loop feature adds the lock, the Gmail search, and the snapshot write.
+ * Time driven trigger entry, every 15 minutes. Any outcome other than success throws
+ * after logging, so Google's failure email fires (spec 0004 AC-6).
  */
 export function onTimer(_e?: GoogleAppsScript.Events.TimeDriven): void {
-  console.log("onTimer: scaffold run, nothing to do yet");
+  const result = runThin({
+    now: () => Date.now(),
+    search: searchMessages,
+    store: driveSnapshotStore,
+    props: scriptProperties,
+    log: (line) => console.log(line),
+  });
+  if (result.outcome !== "success") throw new Error(`onTimer failed: ${result.outcome}`);
 }
 
 /**

@@ -1,5 +1,6 @@
 // covers: AC-10 (ENABLE_UI_GALLERY is read and validated through src/env.ts only)
-import { afterEach, describe, expect, it, vi } from "vitest";
+// covers: spec 0004 (APP_TOKEN, SCRIPT_URL, SCRIPT_KEY are required; SCRIPT_URL is https)
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // env.ts reads process.env when the module loads, so each case loads a fresh copy.
 async function loadEnv() {
@@ -7,8 +8,62 @@ async function loadEnv() {
   return (await import("./env")).env;
 }
 
+const SECRETS = {
+  APP_TOKEN: "app-token-value",
+  SCRIPT_URL: "https://script.google.com/macros/s/abc/exec",
+  SCRIPT_KEY: "script-key-value",
+};
+
+beforeEach(() => {
+  for (const [name, value] of Object.entries(SECRETS)) vi.stubEnv(name, value);
+});
+
 afterEach(() => {
   vi.unstubAllEnvs();
+});
+
+describe("env secrets", () => {
+  it("exposes the three server secrets", async () => {
+    expect(await loadEnv()).toMatchObject({
+      appToken: SECRETS.APP_TOKEN,
+      scriptUrl: SECRETS.SCRIPT_URL,
+      scriptKey: SECRETS.SCRIPT_KEY,
+    });
+  });
+
+  it("trims the secrets, so a stray newline from a dashboard paste cannot break every key", async () => {
+    vi.stubEnv("APP_TOKEN", `  ${SECRETS.APP_TOKEN}\n`);
+    vi.stubEnv("SCRIPT_KEY", `${SECRETS.SCRIPT_KEY}\r\n`);
+    vi.stubEnv("SCRIPT_URL", ` ${SECRETS.SCRIPT_URL} `);
+
+    expect(await loadEnv()).toMatchObject({
+      appToken: SECRETS.APP_TOKEN,
+      scriptKey: SECRETS.SCRIPT_KEY,
+      scriptUrl: SECRETS.SCRIPT_URL,
+    });
+  });
+
+  it.each(["APP_TOKEN", "SCRIPT_URL", "SCRIPT_KEY"])(
+    "refuses to load when %s is missing or blank, naming it",
+    async (name) => {
+      vi.stubEnv(name, undefined);
+      await expect(loadEnv()).rejects.toThrow(`${name} is required.`);
+
+      vi.stubEnv(name, "   ");
+      await expect(loadEnv()).rejects.toThrow(`${name} is required.`);
+    },
+  );
+
+  it.each(["http://script.google.com/exec", "not a url"])(
+    "refuses SCRIPT_URL %j without echoing it",
+    async (value) => {
+      vi.stubEnv("SCRIPT_URL", value);
+
+      const error = await loadEnv().catch((e: Error) => e);
+      expect(String(error)).toContain("SCRIPT_URL must be an https URL.");
+      expect(String(error)).not.toContain(value);
+    },
+  );
 });
 
 describe("env.enableUiGallery", () => {

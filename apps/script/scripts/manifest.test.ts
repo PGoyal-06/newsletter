@@ -27,3 +27,12 @@ describe("appsscript.json", () => {
     expect(manifest.timeZone).toBe("America/New_York");
   });
 });
+
+describe("appsscript.json advanced services", () => {
+  // Spec 0004: Drive goes through the advanced service (v3), with no new scope.
+  it("enables only the Drive advanced service, version v3", () => {
+    expect(manifest.dependencies).toEqual({
+      enabledAdvancedServices: [{ userSymbol: "Drive", serviceId: "drive", version: "v3" }],
+    });
+  });
+});
