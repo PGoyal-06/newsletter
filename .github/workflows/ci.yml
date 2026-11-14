@@ -20,6 +20,12 @@ jobs:
     timeout-minutes: 15
     env:
       HUSKY: "0"
+      # Dummy values, not secrets: apps/web/src/env.ts requires all three wherever Next
+      # loads its config (next typegen in typecheck, builds). CI never calls Apps Script
+      # (spec 0004).
+      APP_TOKEN: ci-dummy-app-token
+      SCRIPT_URL: https://script.invalid/exec
+      SCRIPT_KEY: ci-dummy-script-key
     steps:
       - name: Check out
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
