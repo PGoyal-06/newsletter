@@ -31,6 +31,18 @@ describe("env secrets", () => {
     });
   });
 
+  it("trims the secrets, so a stray newline from a dashboard paste cannot break every key", async () => {
+    vi.stubEnv("APP_TOKEN", `  ${SECRETS.APP_TOKEN}\n`);
+    vi.stubEnv("SCRIPT_KEY", `${SECRETS.SCRIPT_KEY}\r\n`);
+    vi.stubEnv("SCRIPT_URL", ` ${SECRETS.SCRIPT_URL} `);
+
+    expect(await loadEnv()).toMatchObject({
+      appToken: SECRETS.APP_TOKEN,
+      scriptKey: SECRETS.SCRIPT_KEY,
+      scriptUrl: SECRETS.SCRIPT_URL,
+    });
+  });
+
   it.each(["APP_TOKEN", "SCRIPT_URL", "SCRIPT_KEY"])(
     "refuses to load when %s is missing or blank, naming it",
     async (name) => {

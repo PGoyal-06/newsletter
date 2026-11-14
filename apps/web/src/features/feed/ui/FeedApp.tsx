@@ -26,6 +26,9 @@ function FeedScreen({ token, onChangeKey, onSaved }: FeedScreenProps) {
   const query = useQuery({
     queryKey: TODAY_KEY,
     queryFn: () => fetchToday(token),
+    // A 401 is never retried (AC-11): once the key is rejected, nothing refetches with it,
+    // not even a return to the foreground. Saving a new key remounts this with a fresh query.
+    enabled: (q) => !(q.state.error instanceof UnauthorizedError),
     staleTime: 0,
     // An open with an empty cache fetches (no persister yet); a mount onto data the setup
     // test just stored does not. Every return to the foreground refetches.

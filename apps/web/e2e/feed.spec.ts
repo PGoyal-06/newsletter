@@ -54,6 +54,21 @@ async function routeToday(page: Page, ...replies: Reply[]) {
   return seen;
 }
 
+/**
+ * What iOS does when the home screen app is backgrounded and reopened. The event must
+ * bubble: TanStack Query listens on window, and the browser's own event bubbles there.
+ */
+async function returnToForeground(page: Page) {
+  await page.evaluate(() => {
+    const set = (state: string) =>
+      Object.defineProperty(document, "visibilityState", { value: state, configurable: true });
+    set("hidden");
+    document.dispatchEvent(new Event("visibilitychange", { bubbles: true }));
+    set("visible");
+    document.dispatchEvent(new Event("visibilitychange", { bubbles: true }));
+  });
+}
+
 async function submitKey(page: Page, key: string) {
   await page.getByLabel("Secret key").fill(key);
   await page.getByRole("button", { name: "Open today's feed" }).click();
@@ -135,7 +150,8 @@ test("an empty day shows the empty copy", async ({ page }) => {
 test("a 401 while reading the feed opens setup with the stopped working message", async ({
   page,
 }) => {
-  await routeToday(page, { status: 200, body: SNAPSHOT }, { status: 401 });
+  const seen = await routeToday(page, { status: 200, body: SNAPSHOT }, { status: 401 });
+  const seenCount = () => seen.length;
   await page.goto("/");
   await submitKey(page, TOKEN);
   await expect(page.getByRole("link", { name: /Morning Notes/ })).toBeVisible();
@@ -144,6 +160,24 @@ test("a 401 while reading the feed opens setup with the stopped working message"
 
   await expect(page.getByText("That key stopped working. Paste the current one.")).toBeVisible();
   await expect(page.getByRole("button", { name: "Cancel" })).toHaveCount(0);
+
+  // Never retried (AC-11): a return to the foreground must not call again with that key.
+  const callsAfter401 = seenCount();
+  await returnToForeground(page);
+  await page.waitForTimeout(1500);
+  expect(seenCount()).toBe(callsAfter401);
+});
+
+test("returning to the foreground refetches today's feed", async ({ page }) => {
+  const seen = await routeToday(page, { status: 200, body: SNAPSHOT });
+  await page.goto("/");
+  await submitKey(page, TOKEN);
+  await expect(page.getByRole("link", { name: /Morning Notes/ })).toBeVisible();
+  const before = seen.length;
+
+  await returnToForeground(page);
+
+  await expect.poll(() => seen.length).toBe(before + 1);
 });
 
 test("Change secret key opens setup with Cancel, and Cancel keeps the key", async ({ page }) => {

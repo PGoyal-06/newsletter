@@ -1,5 +1,6 @@
 // The only place that reads process.env (AGENTS.md). Server only: never import this from
-// a "use client" file. Validated when the server starts (see src/instrumentation.ts).
+// a "use client" file. Validated twice: by next.config.ts, so a bad value fails the build
+// (and the Vercel deploy), and by src/instrumentation.ts when the server starts.
 
 function readFlag(name: string, raw: string | undefined): boolean {
   if (raw === undefined || raw === "" || raw === "0") return false;
@@ -7,10 +8,15 @@ function readFlag(name: string, raw: string | undefined): boolean {
   throw new Error(`${name} must be "1" or "0" (or unset), got "${raw}".`);
 }
 
-/** A required secret. The error names the variable, never the value. */
+/**
+ * A required secret, trimmed: the phone trims a pasted key, so a stray newline in a
+ * dashboard value must not make every key fail. The error names the variable, never
+ * the value.
+ */
 function readSecret(name: string, raw: string | undefined): string {
-  if (raw === undefined || raw.trim() === "") throw new Error(`${name} is required.`);
-  return raw;
+  const value = raw?.trim() ?? "";
+  if (value === "") throw new Error(`${name} is required.`);
+  return value;
 }
 
 function readHttpsUrl(name: string, raw: string | undefined): string {
